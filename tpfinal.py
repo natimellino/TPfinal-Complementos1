@@ -170,6 +170,13 @@ def compute_gravity_forces(nodes,accum_x,accum_y, positions):
          accum_y[i] -= fy
      return (accum_x, accum_y, positions)
 
+def initialize_temperature(t0):
+    return t0
+
+def update_temperature(t):
+    c = 0.95  # Constante de temperatura (ir viendo)
+    return c * t
+
 def update_positions(nodes, positions, accum_x, accum_y):
     for n in nodes:
         positions[n][0] = positions[n][0] + accum_x[n]
@@ -186,6 +193,11 @@ def update_positions(nodes, positions, accum_x, accum_y):
             positions[n][1] = positions[n][1] + random.random()
     return positions
 
+# def update_positions2(nodes, positions, accum_x, accum_y):
+#     for n in nodes:
+#         f = (accum_x[n], accum_y[n])
+#         norma = math.sqrt((f[0])**2)
+#         if 
 
 def FruchtermanReingold(graph, iterator):
     nodes = graph[0]

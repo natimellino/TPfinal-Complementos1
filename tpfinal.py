@@ -4,17 +4,14 @@ import numpy as np
 import random
 import math
 
-area = 100*100
-cr = 0.05
-ca = 10
-eps = 0.05
+area = 100*100 # area del recuadro
+cr = 0.05 # constante de repulsion
+ca = 10 # constante de atraccion
+eps = 0.05 
 
-# Asignamos coordenadas aleatorias.
+# ------------------------------------------------------------------------------
 
-# -----------------------------------------------------------
-
-# Leemos el archivo de entrada que contiene el grafo.
-
+# Leemos el archivo de entrada.
 
 def read_file(fileName):
     v = []
@@ -34,9 +31,7 @@ def read_file(fileName):
 
     return G
 
-# Define las posiciones aleatorias.
-# (entender como funciona)
-
+# Define las posiciones aleatorias de los vértices.
 
 def randomize_positions(nodes):
     positions = {}
@@ -46,8 +41,7 @@ def randomize_positions(nodes):
         positions[v] = [posx, posy]
     return positions
 
-# Recibe las coordenadas de los vértices u,v.
-
+# Calcula la fuerza de atracción.
 
 def f_attraction(d, nodes):
     # x1 = u[0]
@@ -58,6 +52,7 @@ def f_attraction(d, nodes):
     k = ca * math.sqrt(area/len(nodes))
     return (d**2)/k
 
+# Calcula la fuerza de repulsión.
 
 def f_repultion(d, nodes):
     # x1 = u[0]
@@ -68,6 +63,7 @@ def f_repultion(d, nodes):
     k = cr * math.sqrt(area/len(nodes))
     return (k**2)/d
 
+# Inicializa los acumuladores de x e y.
 
 def initialize_accumulators(acum_x, acum_y, nodes):
     for n in nodes:
@@ -75,10 +71,12 @@ def initialize_accumulators(acum_x, acum_y, nodes):
         acum_y[n] = 0
     return (acum_x, acum_y)
 
+# Función auxiliar que calcula la distancia euclidiana.
 
 def distancia(x1, x2, y1, y2):
-    return math.sqrt((x1-x2)**2 + (y1-y2)**2)  # calcula distancia
+    return math.sqrt((x1-x2)**2 + (y1-y2)**2) 
 
+# Calcula las fuerzas de atracción.
 
 def compute_atracction_forces(positions, accum_x, accum_y, graph):
     nodes = graph[0]
@@ -113,6 +111,7 @@ def compute_atracction_forces(positions, accum_x, accum_y, graph):
         accum_y[nj] -= fy
     return (accum_x, accum_y, positions)
 
+# Calcula las fuerzas de repulsión.
 
 def compute_repultion_forces(nodes, accum_x, accum_y, positions):
     for i in range(0, len(nodes)):
@@ -154,6 +153,7 @@ def compute_repultion_forces(nodes, accum_x, accum_y, positions):
 
     return (accum_x, accum_y, positions)
 
+# Calcula las fuerzas de gravedad.
 
 def compute_gravity_forces(nodes, accum_x, accum_y, positions):
     posx = 50
@@ -170,6 +170,7 @@ def compute_gravity_forces(nodes, accum_x, accum_y, positions):
         accum_y[i] -= fy
     return (accum_x, accum_y, positions)
 
+# Actualiza las posiciones.
 
 def update_positions(nodes, positions, accum_x, accum_y):
     for n in nodes:
@@ -187,6 +188,7 @@ def update_positions(nodes, positions, accum_x, accum_y):
             positions[n][1] = positions[n][1] + random.random()
     return positions
 
+# Update-positions con temperatura (arreglar)
 
 def update_positions2(nodes, positions, accum_x, accum_y, t):
     for n in nodes:
@@ -211,6 +213,8 @@ def update_positions2(nodes, positions, accum_x, accum_y, t):
             positions[n][1] = positions[n][1] + random.random()
         return positions
 
+# Dibuja el grafo
+
 def show_graph(G, positions):
 
     posx = [positions[i][0] for i in G[0]]
@@ -231,6 +235,9 @@ def show_graph(G, positions):
         plt.plot([posx[i1], posx[i2]], [posy[i1], posy[i2]])
     plt.pause(0.001)
     # plt.show()
+
+
+# Algoritmo principal.
 
 def FruchtermanReingold(graph, iterator):
     nodes = graph[0]
@@ -327,6 +334,5 @@ def main():
         i2 = G[0].index(e[1])
         plt.plot([posx[i1], posx[i2]], [posy[i1], posy[i2]])
     plt.show()
-
-
+    
 main()

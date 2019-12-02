@@ -5,8 +5,8 @@ import random
 import math
 
 area = 100*100
-cr = 0.01
-ca = 100
+cr = 0.05
+ca = 10
 eps = 0.05
 
 # Asignamos coordenadas aleatorias.
@@ -75,8 +75,9 @@ def initialize_accumulators(acum_x, acum_y, nodes):
         acum_y[n] = 0
     return (acum_x, acum_y)
 
-def distancia(x1,x2,y1,y2):
-    return math.sqrt((x1-x2)**2 + (y1-y2)**2) # calcula distancia
+
+def distancia(x1, x2, y1, y2):
+    return math.sqrt((x1-x2)**2 + (y1-y2)**2)  # calcula distancia
 
 
 def compute_atracction_forces(positions, accum_x, accum_y, graph):
@@ -87,10 +88,9 @@ def compute_atracction_forces(positions, accum_x, accum_y, graph):
         y1 = positions[ni][1]
         x2 = positions[nj][0]
         y2 = positions[nj][1]
-        dist = distancia(x1,x2,y1,y2)
+        dist = distancia(x1, x2, y1, y2)
         # Evitamos divisiones por cero.
         while dist < eps:
-            print("while1")
             f = random.random()
             positions[ni][0] += f
             positions[ni][1] += f
@@ -101,7 +101,7 @@ def compute_atracction_forces(positions, accum_x, accum_y, graph):
             y1 = positions[ni][1]
             x2 = positions[nj][0]
             y2 = positions[nj][1]
-            dist = distancia(x1,x2,y1,y2)
+            dist = distancia(x1, x2, y1, y2)
 
         mod_fa = f_attraction(dist, nodes)
         # print("modfa: ", mod_fa)
@@ -125,10 +125,9 @@ def compute_repultion_forces(nodes, accum_x, accum_y, positions):
             x2 = positions[v2][0]
             y2 = positions[v2][1]
 
-            dist = distancia(x1,x2,y1,y2)
+            dist = distancia(x1, x2, y1, y2)
 
             while dist < eps:
-                print("while2")
                 f = random.random()
 
                 positions[v1][0] -= f
@@ -141,7 +140,7 @@ def compute_repultion_forces(nodes, accum_x, accum_y, positions):
                 x2 = positions[v2][0]
                 y2 = positions[v2][1]
                 # print(x1,x2,y1,y2)
-                dist = distancia(x1,x2,y1,y2)
+                dist = distancia(x1, x2, y1, y2)
 
             mod_fr = f_repultion(dist, nodes)
             # print("modfr: ", mod_fr)
@@ -155,27 +154,22 @@ def compute_repultion_forces(nodes, accum_x, accum_y, positions):
 
     return (accum_x, accum_y, positions)
 
-def compute_gravity_forces(nodes,accum_x,accum_y, positions):
-     posx = 50
-     posy = 50
-     cg = 0.1
-     for i in nodes:
-         x1 = positions[i][0]
-         y1 = positions[i][1]
-         dist = distancia(x1, posx, y1, posy)
-         # evitamos divisiones por cero
-         fx = (cg*(posx-x1))/dist
-         fy = (cg*(posy-y1))/dist
-         accum_x[i] -= fx
-         accum_y[i] -= fy
-     return (accum_x, accum_y, positions)
 
-def initialize_temperature(t0):
-    return t0
+def compute_gravity_forces(nodes, accum_x, accum_y, positions):
+    posx = 50
+    posy = 50
+    cg = 0.1
+    for i in nodes:
+        x1 = positions[i][0]
+        y1 = positions[i][1]
+        dist = distancia(x1, posx, y1, posy)
+        # evitamos divisiones por cero
+        fx = (cg*(posx-x1))/dist
+        fy = (cg*(posy-y1))/dist
+        accum_x[i] -= fx
+        accum_y[i] -= fy
+    return (accum_x, accum_y, positions)
 
-def update_temperature(t):
-    c = 0.95  # Constante de temperatura (ir viendo)
-    return c * t
 
 def update_positions(nodes, positions, accum_x, accum_y):
     for n in nodes:
@@ -193,11 +187,50 @@ def update_positions(nodes, positions, accum_x, accum_y):
             positions[n][1] = positions[n][1] + random.random()
     return positions
 
-# def update_positions2(nodes, positions, accum_x, accum_y):
-#     for n in nodes:
-#         f = (accum_x[n], accum_y[n])
-#         norma = math.sqrt((f[0])**2)
-#         if 
+
+def update_positions2(nodes, positions, accum_x, accum_y, t):
+    for n in nodes:
+        f = (accum_x[n], accum_y[n])
+        norma = math.sqrt((f[0])**2 + (f[1])**2)
+        if norma > t:
+            f = ((f[0]/norma)*t, (f[1]/norma)*t)
+        accum_x[n] = f[0]
+        accum_y[n] = f[1]
+
+        positions[n][0] = positions[n][0] + accum_x[n]
+        positions[n][1] = positions[n][1] + accum_y[n]
+        # Verificamos los bordes de la pantalla para x.
+        while positions[n][0] >= 100:
+            positions[n][0] = positions[n][0] - random.random()
+        while positions[n][0] <= 0:
+            positions[n][0] = positions[n][0] + random.random()
+        # Verificamos los bordes de la pantalla para y.
+        while positions[n][1] >= 100:
+            positions[n][1] = positions[n][1] - random.random()
+        while positions[n][1] <= 0:
+            positions[n][1] = positions[n][1] + random.random()
+        return positions
+
+def show_graph(G, positions):
+
+    posx = [positions[i][0] for i in G[0]]
+    posy = [positions[i][1] for i in G[0]]
+    plt.clf()
+    # for i,v in enumerate(G[0]):
+    #     posx.append(random.random())
+    #     posy.append(random.random())
+    #     #print(posx[i], posy[i])
+
+    # Dibujo puntos:
+    plt.scatter(posx, posy)
+
+    # Dibujo aristas:
+    for e in G[1]:
+        i1 = G[0].index(e[0])
+        i2 = G[0].index(e[1])
+        plt.plot([posx[i1], posx[i2]], [posy[i1], posy[i2]])
+    plt.pause(0.001)
+    # plt.show()
 
 def FruchtermanReingold(graph, iterator):
     nodes = graph[0]
@@ -205,9 +238,10 @@ def FruchtermanReingold(graph, iterator):
     # print(positions)
     accum_x = dict()
     accum_y = dict()
-
+    t = 1
     for i in range(1, iterator+1):
-        
+        plt.ion()
+
         acumm = initialize_accumulators(accum_x, accum_y, graph[0])
         accum_x = acumm[0]
         accum_y = acumm[1]
@@ -231,14 +265,17 @@ def FruchtermanReingold(graph, iterator):
         positions = acumm[2]
 
         positions = update_positions(graph[0], positions, accum_x, accum_y)
-        
+        t = 1 * t
+        show_graph(graph, positions)
+        plt.show
+        plt.ioff()
 
     # print(accum_x, accum_y, positions)
     return positions
 
 
 def main():
-    
+
     # Parser
 
     parser = argparse.ArgumentParser()
@@ -272,7 +309,7 @@ def main():
     # G = (['a', 'b', 'c', 'd'], [('a', 'b'), ('b', 'c'), ('b', 'd')])
     #positions = randomize_positions(G[0])
     G = read_file(args.file_name)
-    positions = FruchtermanReingold(G, 50)
+    positions = FruchtermanReingold(G, 100)
     posx = [positions[i][0] for i in G[0]]
     posy = [positions[i][1] for i in G[0]]
 
@@ -289,7 +326,7 @@ def main():
         i1 = G[0].index(e[0])
         i2 = G[0].index(e[1])
         plt.plot([posx[i1], posx[i2]], [posy[i1], posy[i2]])
-    plt.show()  
+    plt.show()
 
 
 main()

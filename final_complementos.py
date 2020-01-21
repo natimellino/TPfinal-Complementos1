@@ -6,11 +6,9 @@ import math
 
 # -------------------------------------------------------------------------------
 # Hacer:
-# -) Agregar verbosidad.
 # -) ReadMe
 # -) Revisar todo por las dudas.
 # -) Ver lo de los bordes de la pantalla en update_positions.
-# -) Cambiar el nombre del archivo xq me dio paja hacerlo antes.
 # -------------------------------------------------------------------------------
 
 # Obs: las funciones que cambiaron con respecto a la versión anterior son la de
@@ -200,7 +198,7 @@ class LayoutGraph:
         # Guardo opciones
         self.iters = iters
         # self.verbose = verbose
-        self.verbose = False  # Cambiar despues!
+        self.verbose = verbose  # Cambiar despues!
         self.refresh = refresh
         self.c1 = c1  # Constante de repulsión.
         self.c2 = c2  # Constante de atracción.
@@ -217,28 +215,47 @@ class LayoutGraph:
         Aplica el algoritmo de Fruchtermann-Reingold para obtener (y mostrar) 
         un layout        
         '''
+        if(self.verbose):
+            print("Inicializamos posiciones aleatorias:")
         # Inicializamos posiciones aleatorias.
         self.posiciones = randomize_positions(self.grafo[0])
+
+        if (self.verbose):
+            for pos in self.posiciones:
+                print(pos, self.posiciones[pos])
+            print("Pulse enter para iniciar el graficado.")
+            input()
 
         plt.ion()
 
         # Bucle principal
         for i in range(self.iters):
 
+            if(self.verbose):
+                print("Iteración: ", i)
+                print("Inicializando acumuladores en 0.")
             # Inicializo acumuladores
             self.accum_x = {node: 0 for node in self.grafo[0]}
             self.accum_y = {node: 0 for node in self.grafo[0]}
 
             # Calculamos fuerzas de atracción:
+            if(self.verbose):
+                print("Calculando fuerzas de atracción.")
             compute_atraction_forces(self)
 
             # Calculamos fuerzas de repulsión:
+            if(self.verbose):
+                print("Calculando fuerzas de repulsión.")
             compute_repultion_forces(self)
 
+            if(self.verbose):
+                print("Calculando fuerzas de gravedad.")
             # Calculamos fuerzas de gravedad:
             compute_gravity_forces(self)
 
             # Actualizamos las posiciones:
+            if(self.verbose):
+                print("Actualizamos las posiciones\n")
             update_positions(self)
 
             # Actualizamos la temperatura:
@@ -269,12 +286,11 @@ def main():
         'file_name',
         help='Archivo del cual leer el grafo a dibujar'
     )
-    # Verbosidad, opcional, False por defecto
+    # Verbosidad, opcional.
     parser.add_argument(
         '-v', '--verbose',
         action='store_true',
         help='Muestra mas informacion al correr el programa',
-        default=False
     )
     # Cantidad de iteraciones, opcional, 150 por defecto
     parser.add_argument(

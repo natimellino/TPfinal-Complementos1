@@ -4,18 +4,6 @@ import numpy as np
 import random
 import math
 
-# -------------------------------------------------------------------------------
-# Hacer:
-# -) ReadMe
-# -) Revisar todo por las dudas.
-# -) Ver lo de los bordes de la pantalla en update_positions.
-# -------------------------------------------------------------------------------
-
-# Obs: las funciones que cambiaron con respecto a la versión anterior son la de
-# compute_gravity_forces y update_positions. El resto de las funciones mantienen
-# la misma idea que en la versión anterior, sólo que ahora todo fue implementado
-# utilizando Clases.
-
 # Leemos el archivo de entrada.
 
 
@@ -37,8 +25,8 @@ def read_file(fileName):
 
     return G
 
-# Define las posiciones aleatorias de los vértices.
 
+# Define las posiciones aleatorias de los vértices.
 
 def randomize_positions(nodes):
     positions = {}
@@ -48,30 +36,30 @@ def randomize_positions(nodes):
         positions[v] = [posx, posy]
     return positions
 
-# Calcula la distancia entre dos vertices.
 
+# Calcula la distancia entre dos vertices.
 
 def distance(clase, n1, n2):
     pos0 = clase.posiciones[n1]
     pos1 = clase.posiciones[n2]
     return ((pos0[0]-pos1[0])**2+(pos0[1]-pos1[1])**2)**(1/2)
 
-# Fuerza de atracción.
 
+# Fuerza de atracción.
 
 def f_atracction(clase, dist):
     k = clase.c2*math.sqrt((clase.tam*clase.tam)/len(clase.grafo[0]))
     return (dist)**2/k
 
-# Fuerza de repulsión.
 
+# Fuerza de repulsión.
 
 def f_repultion(clase, dist):
     k = clase.c1*math.sqrt((clase.tam*clase.tam)/len(clase.grafo[0]))
     return k**2/dist
 
-# Calculamos las fuerzas de atracción de todos los vértices.
 
+# Calculamos las fuerzas de atracción de todos los vértices.
 
 def compute_atraction_forces(clase):
     for n1, n2 in clase.grafo[1]:
@@ -144,10 +132,8 @@ def compute_gravity_forces(clase):
     clase.accum_x[n] -= fx
     clase.accum_y[n] -= fy
 
+
 # Actualizamos las posiciones de los vértices.
-
-
-# que pasa con los bordes de la pantalla?
 
 def update_positions(clase):
     for n in clase.grafo[0]:
@@ -174,11 +160,11 @@ def draw(clase):
         i2 = (clase.grafo[0]).index(e[1])
         plt.plot((x[i1], x[i2]), (y[i1], y[i2]))
 
+# Utilizamos una clase 'LayoutGraph' para almacenar el grafo y todos los parámetros
+# necesarios para el algoritmo.
 
 class LayoutGraph:
 
-    # Al inicializar una clase 'LayoutGraph' en el main la inicializamos para
-    # almacenar en ella los parámetros que recibe _init_ (ver en el main).
     def __init__(self, grafo, iters, refresh, c1, c2, verbose, tam, grav, temp, accum_x, accum_y):
         '''    
         Parametros de layout:
